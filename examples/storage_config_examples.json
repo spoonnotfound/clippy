@@ -1,0 +1,116 @@
+{
+  "examples": {
+    "local_filesystem": {
+      "backend": {
+        "FileSystem": {
+          "root_path": "./clippy_sync_data"
+        }
+      },
+      "retry_attempts": 3,
+      "timeout_seconds": 30
+    },
+    
+    "aws_s3": {
+      "backend": {
+        "S3": {
+          "bucket": "my-clippy-bucket",
+          "region": "us-east-1",
+          "access_key_id": "AKIAIOSFODNN7EXAMPLE",
+          "secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+          "endpoint": null
+        }
+      },
+      "retry_attempts": 3,
+      "timeout_seconds": 30
+    },
+    
+    "minio": {
+      "backend": {
+        "S3Compatible": {
+          "bucket": "clippy",
+          "endpoint": "http://localhost:9000",
+          "access_key_id": "minioadmin",
+          "secret_access_key": "minioadmin",
+          "region": "us-east-1"
+        }
+      },
+      "retry_attempts": 3,
+      "timeout_seconds": 30
+    },
+    
+    "aliyun_oss": {
+      "backend": {
+        "Oss": {
+          "bucket": "my-clippy-bucket",
+          "region": "oss-cn-hangzhou",
+          "access_key_id": "LTAI4G***",
+          "access_key_secret": "your_secret_key",
+          "endpoint": null
+        }
+      },
+      "retry_attempts": 3,
+      "timeout_seconds": 30
+    },
+    
+    "tencent_cos": {
+      "backend": {
+        "Cos": {
+          "bucket": "my-clippy-bucket-1234567890",
+          "region": "ap-guangzhou",
+          "secret_id": "AKIDrAr7***",
+          "secret_key": "your_secret_key"
+        }
+      },
+      "retry_attempts": 3,
+      "timeout_seconds": 30
+    },
+    
+    "azure_blob": {
+      "backend": {
+        "AzBlob": {
+          "container": "clippy",
+          "account_name": "mystorageaccount",
+          "account_key": "your_account_key"
+        }
+      },
+      "retry_attempts": 3,
+      "timeout_seconds": 30
+    }
+  },
+  
+  "instructions": {
+    "setup": [
+      "选择一个适合的存储后端配置",
+      "将配置复制到 storage_config.json 文件中",
+      "设置正确的凭据和参数",
+      "运行应用程序，同步功能将自动启用"
+    ],
+    
+    "environment_variables": {
+      "description": "也可以通过环境变量配置存储后端",
+      "aws_s3": {
+        "AWS_S3_BUCKET": "my-clippy-bucket",
+        "AWS_REGION": "us-east-1",
+        "AWS_ACCESS_KEY_ID": "your_access_key",
+        "AWS_SECRET_ACCESS_KEY": "your_secret_key"
+      },
+      "minio": {
+        "MINIO_BUCKET": "clippy",
+        "MINIO_ENDPOINT": "http://localhost:9000",
+        "MINIO_ACCESS_KEY": "minioadmin",
+        "MINIO_SECRET_KEY": "minioadmin"
+      },
+      "user_id": {
+        "CLIPPY_USER_ID": "your_unique_user_id"
+      }
+    },
+    
+    "security_notes": [
+      "强烈建议对剪切板内容进行端到端加密",
+      "不要在配置文件中硬编码敏感凭据",
+      "使用环境变量或安全的密钥管理系统",
+      "定期轮换访问密钥",
+      "确保存储桶的访问权限设置正确"
+    ]
+  }
+} 

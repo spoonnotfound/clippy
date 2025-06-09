@@ -49,4 +49,7 @@ export default {
     },
   },
   plugins: [],
+  experimental: {
+    optimizeUniversalDefaults: true
+  },
 } 

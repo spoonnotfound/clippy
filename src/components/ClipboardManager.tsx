@@ -1,7 +1,7 @@
 import React from "react";
 import { Copy, Trash2, Clock, File, Files, FileImage, FileText, FileCode, Archive, Music, Video, Database, HardDrive } from "lucide-react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import { ClipboardItem, FileTypeInfo, StorageStats } from "../App";
 
 interface ClipboardManagerProps {
@@ -22,7 +22,7 @@ export const ClipboardManager: React.FC<ClipboardManagerProps> = ({
   onDeleteItem,
   onCompactStorage,
   onCopyToClipboard,
-  onCopyImageToClipboard,
+  onCopyImageToClipboard: _onCopyImageToClipboard,
   onCopyFilesToClipboard,
 }) => {
   const formatTimestamp = (timestamp: number) => {

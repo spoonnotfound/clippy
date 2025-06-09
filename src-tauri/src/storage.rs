@@ -278,6 +278,16 @@ impl StorageEngine {
         // 刷新并关闭当前文件
         self.file.flush()?;
         
+        // 重要：创建一个临时的虚拟writer来替换当前文件句柄
+        // 这样确保原文件句柄被完全释放
+        let temp_dummy_path = self.file_path.with_extension("dummy");
+        let dummy_file = OpenOptions::new()
+            .create(true)
+            .write(true)
+            .truncate(true)
+            .open(&temp_dummy_path)?;
+        drop(std::mem::replace(&mut self.file, BufWriter::new(dummy_file)));
+        
         let temp_path = self.file_path.with_extension("tmp");
         
         // 创建临时文件
@@ -298,14 +308,18 @@ impl StorageEngine {
                 data: Some(item.clone()),
             };
             
-            self.write_record_to_writer(&record, &mut temp_writer)?;
+            // 直接写入到临时文件的writer
+            Self::write_record_to_writer_static(&record, &mut temp_writer)?;
         }
         
         temp_writer.flush()?;
         drop(temp_writer);
         
-        // 替换原文件
+        // 现在可以安全地替换原文件
         std::fs::rename(&temp_path, &self.file_path)?;
+        
+        // 清理临时的dummy文件
+        let _ = std::fs::remove_file(&temp_dummy_path);
         
         // 重新打开文件
         let file = OpenOptions::new()
@@ -322,8 +336,8 @@ impl StorageEngine {
         Ok(())
     }
     
-    // 辅助方法：写入记录到指定writer
-    fn write_record_to_writer(&self, record: &StorageRecord, writer: &mut BufWriter<File>) -> Result<(), Box<dyn std::error::Error>> {
+    // 辅助方法：写入记录到指定writer（静态版本）
+    fn write_record_to_writer_static(record: &StorageRecord, writer: &mut BufWriter<File>) -> Result<(), Box<dyn std::error::Error>> {
         // 写入操作类型 (1 byte)
         writer.write_all(&[record.operation as u8])?;
         
@@ -347,6 +361,11 @@ impl StorageEngine {
         }
         
         Ok(())
+    }
+
+    // 辅助方法：写入记录到指定writer
+    fn write_record_to_writer(&self, record: &StorageRecord, writer: &mut BufWriter<File>) -> Result<(), Box<dyn std::error::Error>> {
+        Self::write_record_to_writer_static(record, writer)
     }
 }
 

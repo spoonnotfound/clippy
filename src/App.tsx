@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { ClipboardManager } from "./components/ClipboardManager";
+import { StorageConfig } from "./components/StorageConfig";
+import { ConfigGuide } from "./components/ConfigGuide";
 import "./App.css";
 
 export interface FileTypeInfo {
@@ -28,6 +30,7 @@ export interface StorageStats {
 }
 
 function App() {
+  const [currentView, setCurrentView] = useState<'clipboard' | 'config' | 'guide'>('clipboard');
   const [clipboardHistory, setClipboardHistory] = useState<ClipboardItem[]>([]);
   const [storageStats, setStorageStats] = useState<StorageStats | null>(null);
 
@@ -129,16 +132,63 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      <ClipboardManager
-        items={clipboardHistory}
-        storageStats={storageStats}
-        onClearHistory={handleClearHistory}
-        onDeleteItem={handleDeleteItem}
-        onCompactStorage={handleCompactStorage}
-        onCopyToClipboard={handleCopyToClipboard}
-        onCopyImageToClipboard={handleCopyImageToClipboard}
-        onCopyFilesToClipboard={handleCopyFilesToClipboard}
-      />
+      <nav className="bg-white border-b border-gray-200 px-4 py-2">
+        <div className="flex space-x-4">
+          <button
+            onClick={() => setCurrentView('clipboard')}
+            className={`px-3 py-2 rounded-md text-sm font-medium ${
+              currentView === 'clipboard'
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            剪切板历史
+          </button>
+          <button
+            onClick={() => setCurrentView('config')}
+            className={`px-3 py-2 rounded-md text-sm font-medium ${
+              currentView === 'config'
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            同步配置
+          </button>
+          <button
+            onClick={() => setCurrentView('guide')}
+            className={`px-3 py-2 rounded-md text-sm font-medium ${
+              currentView === 'guide'
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            配置指南
+          </button>
+        </div>
+      </nav>
+
+      <div className="p-4">
+        {currentView === 'clipboard' && (
+          <ClipboardManager
+            items={clipboardHistory}
+            storageStats={storageStats}
+            onClearHistory={handleClearHistory}
+            onDeleteItem={handleDeleteItem}
+            onCompactStorage={handleCompactStorage}
+            onCopyToClipboard={handleCopyToClipboard}
+            onCopyImageToClipboard={handleCopyImageToClipboard}
+            onCopyFilesToClipboard={handleCopyFilesToClipboard}
+          />
+        )}
+        
+        {currentView === 'config' && (
+          <StorageConfig />
+        )}
+        
+        {currentView === 'guide' && (
+          <ConfigGuide />
+        )}
+      </div>
     </div>
   );
 }
